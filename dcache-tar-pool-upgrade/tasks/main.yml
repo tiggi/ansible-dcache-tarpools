@@ -1,0 +1,144 @@
+---
+- name: "Clean up downloads directory"
+  file:
+    state: absent
+    name: "{{ item }}"
+  with_items:
+     - "{{ pool_home_dir }}/downloads/newjava.tar.gz"
+     - "{{ pool_home_dir }}/downloads/new.tar.gz"
+
+- name: "Check if private java has been installed" 
+  stat:
+     path: "{{ pool_home_dir }}/installed_java"
+  register: java_installed
+
+- name: "Check installed java version"
+  shell: cat {{ pool_home_dir }}/installed_java
+  when: java_installed.stat.exists
+  register: installed_java_url
+ 
+- block:
+  - name: "Create new java directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/newjava"
+    
+  - name: "Download new java"
+    get_url:
+      url:  "{{ java_url }}"
+      dest: "{{ pool_home_dir }}/downloads/newjava.tar.gz"
+      force: yes
+    
+  - name:  "Unpack new java" 
+    unarchive: 
+       remote_src: yes
+       src:        "{{ pool_home_dir }}/downloads/newjava.tar.gz"
+       dest:       "{{ pool_home_dir }}/newjava"
+       extra_opts: ['--strip-components=1','--show-stored-names']
+
+  - name:    "Rename current java to old"
+    command: "mv {{ pool_home_dir }}/java {{ pool_home_dir }}/oldjava"
+
+  - name:    "Rename newjava to java"
+    command: "mv {{ pool_home_dir }}/newjava {{ pool_home_dir }}/java"
+    notify:  "restart_dcache"
+
+  - name:    "Remove old java"
+    file:
+      path:  "{{ pool_home_dir }}/oldjava"
+      state: absent
+  
+  - name:    "Log installed java in {{ pool_home_dir }}/installed_java"
+    shell:   "echo {{ java_url }} > {{ pool_home_dir }}/installed_java"
+
+  when: java_installed.stat.exists == False or installed_java_url.stdout_lines[0] != java_url 
+  remote_user: "{{ pool_remote_user }}"
+
+# java block end
+
+- name: "Check if any dcache has been installed" 
+  stat: 
+    path: "{{ pool_home_dir }}/installed_versions.log"
+  register: dcache_installed
+
+- name: "Fetch last installed dcache version"
+  shell: tail -n 1 {{ pool_home_dir }}/installed_versions.log
+  register: dcache_last_installed_url
+  when: dcache_installed.stat.exists
+
+- block:
+  - name: "Create new directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/new"
+
+  - name: "Download dCache tar"
+    get_url:
+      url:  "{{ dcache_tar_url }}"
+      dest: "{{ pool_home_dir }}/downloads/new.tar.gz"
+      force: yes
+
+  - name:  "Unpack new dcache" 
+    unarchive: 
+       remote_src: yes
+       src:        "{{ pool_home_dir }}/downloads/new.tar.gz"
+       dest:       "{{ pool_home_dir }}/new"
+       extra_opts: ['--strip-components=1','--show-stored-names']
+
+  - name:  "Remove packaged dcache.conf"
+    file:
+      path: "{{ pool_home_dir }}/new/etc/dcache/dcache.conf"
+      state: absent
+
+  - name:  "Symlink layout file"
+    file:
+      state:  link
+      src:    "{{ pool_home_dir }}/config/tarpool.conf"
+      dest:   "{{ pool_home_dir }}/new/etc/layouts/tarpool.conf"
+      force: yes
+
+  - name:  "Symlink dcache.conf"
+    file:
+      state:  link
+      src:    "{{ pool_home_dir }}/config/dcache.conf"
+      dest:   "{{ pool_home_dir }}/new/etc/dcache.conf"
+      force: yes
+
+  - name:  "Symlink dcache.conf"
+    file:
+      state:  link
+      src:    "{{ pool_home_dir }}/log"
+      dest:   "{{ pool_home_dir }}/new/var/log"
+      force: yes
+
+  - name: "Check if current dCache exists"
+    stat:
+      path: "{{ pool_home_dir }}/current"
+    register: dcache_current
+
+  - name:    "Stop dCache"
+    shell: "{{ pool_home_dir }}/current/bin/dcache stop"
+    args:
+      executable: "/bin/bash"
+    when:     dcache_current.stat.exists
+
+  - name:    "Rename current dCache to old"
+    command: "mv {{ pool_home_dir }}/current {{ pool_home_dir }}/old"
+    when:     dcache_current.stat.exists
+
+  - name:   "Rename new dCache to current"
+    command: "mv {{ pool_home_dir }}/new {{ pool_home_dir }}/current"
+    notify:  "restart_dcache"
+
+  - name:    "Remove old dCache"
+    file:
+      path:  "{{ pool_home_dir }}/old"
+      state: absent
+  
+  - name:    "Log installed tar in {{ pool_home_dir }}/installed_versions.log"
+    shell:   "echo {{ dcache_tar_url }} >> {{ pool_home_dir }}/installed_versions.log"
+
+  remote_user: "{{ pool_remote_user }}"
+  when: dcache_installed.stat.exists == False or dcache_last_installed_url.stdout_lines[0] != dcache_tar_url  
+# dcache block end 
+

@@ -1,0 +1,10 @@
+
+1. download new tar into downloads
+2. untar new tar into new
+3. symlink new/etc/dcache/dcache.conf to config/dcache.conf
+4. stop dcache
+5. mv current old
+6. mv new current
+7. start dcache
+8. rm -rf old 
+9. rm downloads/*.tar.gz

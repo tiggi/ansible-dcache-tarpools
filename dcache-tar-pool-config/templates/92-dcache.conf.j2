@@ -1,0 +1,12 @@
+#
+# limits configuration for dcache
+#
+
+# number of processes/threads
+{{ pool_remote_user }}  soft nproc unlimited
+
+# number of open files and connections
+{{ pool_remote_user }}  soft nofile 65535
+{{ pool_remote_user }}  hard nofile 65535
+
+

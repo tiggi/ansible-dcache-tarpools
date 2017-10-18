@@ -1,0 +1,17 @@
+A lot of the generic pool installation instructions still apply except
+for the java/dcache related parts. But ganglia configuration,
+filesystemet setup, tcp tuning and more still applies. Basically
+things that the dcache user cannot fix.
+
+Prereqs:
+- bash as shell for dcache user
+- bash installed as /bin/bash
+- logrotate installed
+- dcache_netports_min to dcache_netports_max open in the firewall
+- cron installed, running and the dcache user allowed to use it
+- Space for pools ready for use, with a toplevel pooldir created and owned by the dcache user
+- ssh with only public keys allowed, preferably from the world
+
+After first config run:
+- Symlink or copy the {{ pool_home_dir }}/config/92-dcache.conf file to /etc/security/limits.d
+- If ~dcache/.ssh/authorized_keys is not in use on the poolnode, copy or symlink that to the correct place

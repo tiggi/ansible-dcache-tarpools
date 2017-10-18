@@ -1,0 +1,14 @@
+- block: 
+  - name: "Create pool creation script"
+    template:
+         src: "create_pools.j2"
+         dest: "{{ pool_home_dir }}/create_pools"
+         mode: 0755 
+
+  - name: "Create pools"
+    command: "{{ pool_home_dir }}/create_pools"
+    notify:
+         - "redo layouts template"
+         - "restart_dcache"
+
+  remote_user: "{{ pool_remote_user }}"

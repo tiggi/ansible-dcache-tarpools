@@ -1,0 +1,29 @@
+# The dCache user config
+pool_remote_user:       "dcache"
+pool_user_homedir:      "/home/{{ pool_remote_user }}"
+pool_home_dir:          "{{ pool_user_homedir }}/dcache"
+
+# Authorized_keys file to use
+pool_authorized_keys:   "authorized_keys"
+
+# HTTP proxy for pool
+pool_http_proxy: 	""
+
+# Memory settings for dCache
+dcache_memory_heap:     "4096m"
+dcache_memory_direct:   "2048m"
+
+# Extra settings for java
+#dcache_java_options_extra: 
+
+# Ports for movers
+dcache_netports_min:    20000
+dcache_netports_max:    25000
+
+# where to put oom heapdumps?
+dcache_java_oom_location: "{{ pool_home_dir }}/log"
+
+# Defaults for logging
+dcache_log_host:        ""
+dcache_log_port:        "6446"
+dcache_log_remote:      false

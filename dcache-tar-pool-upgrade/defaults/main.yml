@@ -1,0 +1,13 @@
+# The dCache user config
+pool_remote_user:       "dcache"
+pool_user_homedir:      "/home/{{ pool_remote_user }}"
+pool_home_dir:          "{{ pool_user_homedir }}/dcache"
+
+# Sensible default for a dcache tar file
+dcache_tar_url:         "https://www.dcache.org/downloads/1.9/repo/3.0/dcache-3.0.26.tar.gz"
+
+# A downloadable tar file of java
+java_url:               "http://cvmfs-6.ndgf.org/~tigerste/server-jre-8u144-linux-x64.tar.gz"
+
+# HTTP proxy for pool
+pool_http_proxy: 	""

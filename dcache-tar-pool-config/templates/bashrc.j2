@@ -1,0 +1,9 @@
+# Managed by ansible!
+
+{% if pool_http_proxy != ""  %}
+export http_proxy="{{ pool_http_proxy }}"
+export https_proxy="{{ pool_http_proxy }}"
+{% endif %}
+
+export PATH="{{ pool_home_dir }}/current/bin:{{ pool_home_dir }}/current/sbin:{{ pool_home_dir }}/java/bin:$PATH"
+export PS1="<ansible>[\u@\h \W]\$ "

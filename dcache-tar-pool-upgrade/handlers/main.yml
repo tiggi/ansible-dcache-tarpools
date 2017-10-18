@@ -1,0 +1,18 @@
+---
+
+ - name: "stop_dcache" 
+   shell: "{{ pool_home_dir }}/current/bin/dcache start"
+   args:
+     executable: /bin/bash
+ 
+ - name: "start_dcache"
+   shell: ( ( nohup {{ pool_home_dir }}/current/bin/dcache start  1>/dev/null 2>&1 ) & )
+   args:
+     executable: /bin/bash
+
+ - name: "restart_dcache"
+   shell: ( ( nohup {{ pool_home_dir }}/current/bin/dcache restart  1>/dev/null 2>&1 ) & )
+   args:
+     executable: /bin/bash
+ 
+

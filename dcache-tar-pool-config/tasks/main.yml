@@ -1,0 +1,100 @@
+- block: 
+  - name: "Create dcache directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}"
+
+  - name: "Create config directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/config"
+
+  - name: "Create log directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/log"
+
+  - name: "Create downloads directory"
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/downloads"
+
+  - name: "Create java directory" 
+    file:
+      state: directory
+      path:  "{{ pool_home_dir }}/java"
+
+  - name: "Create cronjob to start dcache"
+    cron: 
+       name:          "dcache automatic startup"
+       state:         present
+       special_time:  reboot
+       job:           "{{ pool_home_dir }}/current/bin/dcache start"
+
+  - name: "Set a sensible shell for cron"
+    cronvar:
+       name: PATH
+       value: "{{ pool_home_dir }}/current/bin:{{ pool_home_dir }}/current/sbin:{{ pool_home_dir }}/java/bin:/bin:/usr/bin:/usr/local/bin"
+
+  - name: "Create cronjob to run logrotate weekly"
+    cron: 
+       name:          "logrotate for dcache"
+       state:         present
+       weekday:       "1"
+       minute:        "5"
+       hour:          "5"
+       job:           "/usr/sbin/logrotate -s {{ pool_home_dir }}/config/logrotate.state {{ pool_home_dir }}/config/logrotate.conf"
+  
+  - name: "Template logrotate config"
+    template:
+        src: "logrotate.conf.j2"
+        dest: "{{ pool_home_dir }}/config/logrotate.conf"
+
+  remote_user: "{{ pool_remote_user }}"
+
+- block:
+  - name: "Template dcache.conf"
+    template:
+        src: "dcache.conf.j2"
+        dest: "{{ pool_home_dir }}/config/dcache.conf"
+
+  - name: "redo layouts template"
+    template:
+         src: "tarpool.conf.j2"
+         dest: "{{ pool_home_dir }}/config/tarpool.conf"
+
+  - name: "Template .bashrc"
+    template:
+         src: "bashrc.j2"
+         dest: "{{ pool_user_homedir }}/.bashrc"
+
+  - name: "Symlink .bash_login to .bashrc"
+    file:
+       state: link
+       src: "{{ pool_user_homedir }}/.bashrc"
+       dest: "{{ pool_user_homedir }}/.bash_login"
+
+  - name: "Create ~/.ssh" 
+    file:
+       state: directory
+       path:  "{{ pool_user_homedir }}/.ssh"
+       mode:  0700
+       owner: "{{ pool_remote_user }}"
+
+  - name: "Copy authorized_keys"
+    copy: 
+       dest: "{{ pool_user_homedir }}/.ssh/authorized_keys"
+       src: "{{ pool_authorized_keys }}"
+       mode: 0600
+       follow: no
+
+  - name: "Template limits.d file"
+    template:
+       src:  "92-dcache.conf.j2"
+       dest: "{{ pool_home_dir }}/config/92-dcache.conf"
+
+
+  remote_user: "{{ pool_remote_user }}"
+# end block
+#
+

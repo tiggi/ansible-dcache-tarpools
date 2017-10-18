@@ -1,0 +1,14 @@
+#!/bin/bash
+
+{% for pname in dcache_poolinfo  %}
+
+
+if [ ! -d {{ dcache_poolinfo[pname].poolpath }} ]; then
+	{{ pool_home_dir }}/current/bin/dcache pool create --meta=db  --size={{ dcache_poolinfo[pname].poolsize }} {{ dcache_poolinfo[pname].poolpath }} {{ dcache_poolinfo[pname].poolname }}  {{ dcache_poolinfo[pname].domain }}
+else 
+	echo "Pool {{ dcache_poolinfo[pname].poolpath }}/{{ dcache_poolinfo[pname].poolname }} already exists!"
+fi
+{% endfor %}
+
+
+

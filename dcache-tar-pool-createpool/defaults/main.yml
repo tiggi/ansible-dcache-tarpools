@@ -1,0 +1,4 @@
+# The dCache user config
+pool_remote_user:       "dcache"
+pool_user_homedir:      "/home/dcache"
+pool_home_dir:          "{{ pool_user_homedir }}/dcache"

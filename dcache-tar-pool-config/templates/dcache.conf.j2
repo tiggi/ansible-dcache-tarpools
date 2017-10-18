@@ -1,0 +1,49 @@
+# {{ ansible_managed }} 
+
+dcache.zookeeper.connection = {{ dcache_zookeeper }} 
+
+# Name of layout file
+dcache.layout = tarpool
+
+# If you have a big pool or many pools per domain, you probably want
+# more memory in the java process than the default 512m. 1024m ought
+# to be enough for a single 10TiB pool, but you probably need 2048m
+# for a 20TiB pool. As a rule of thumb, use 512m + 512m for every 10
+# TiB of pool (rounded to a nice value).
+#
+# Tape write pools are usually not big and you can use 1024m. A large
+# file system cache is more useful on such pools.
+dcache.java.memory.heap = {{ dcache_memory_heap }}
+
+# The default is 512m, but in particular with xrootd this isn't quite
+# enough.
+#
+# There is no reason to scale this by pool size - how much is required
+# depends more on access patterns. For Alice tape write pools this
+# MUST be at least 2048m.
+dcache.java.memory.direct = {{ dcache_memory_direct }} 
+
+# Ports used by movers, must be open in firewall.
+dcache.net.wan.port.min = {{ dcache_netports_min }}
+dcache.net.wan.port.max = {{ dcache_netports_max }}
+dcache.net.lan.port.min = {{ dcache_netports_min }}
+dcache.net.lan.port.max = {{ dcache_netports_max }}
+
+# All pools are tagged by the FQDN of the host. dCache uses this to
+# avoid replicating files to pools on the same host.
+pool.tags = hostname=${host.fqdn}
+
+# Directory to put heap dumps info
+dcache.java.oom.location = {{ dcache_java_oom_location }}
+{% if dcache_java_options_extra is defined %}
+
+# Extra java options
+dcache.java.options.extra={{ dcache_java_options_extra }}
+{% endif %}
+{% if dcache_log_remote == true %}
+
+# Remote log destination
+dcache.log.server.host = {{ dcache_log_host }}
+dcache.log.server.port = 6446
+dcache.log.level.remote = warn
+{% endif %}

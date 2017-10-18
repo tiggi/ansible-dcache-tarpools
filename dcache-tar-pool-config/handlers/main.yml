@@ -1,0 +1,7 @@
+---
+- name: "redo layouts template"
+  template:
+         src: "tarpool.conf.j2"
+         dest: "{{ pool_home_dir }}/config/tarpool.conf"
+  remote_user: "{{ pool_remote_user }}"
+

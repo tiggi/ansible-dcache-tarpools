@@ -1,0 +1,24 @@
+{{ pool_home_dir }}/log/*.log {
+    compress
+    weekly
+    rotate 52
+    missingok
+    copytruncate
+}
+{{ pool_home_dir }}/log/*.events {
+    compress
+    weekly
+    rotate 52
+    missingok
+    copytruncate
+}
+
+{{ pool_home_dir }}/log/*.access {
+    compress
+    weekly
+    rotate 52
+    missingok
+    copytruncate
+}
+
+

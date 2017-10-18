@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+{% for pname in dcache_poolinfo  %}
+
+[{{ dcache_poolinfo[pname].domain }}]
+{% if dcache_poolinfo[pname].pool_java_extra_options is defined %}
+dcache.java.options.extra={{ dcache_poolinfo[pname].pool_java_options_extra }}
+{% endif %}
+{% if dcache_poolinfo[pname].pool_memory_direct is defined %}
+dcache.java.memory.direct={{ dcache_poolinfo[pname].pool_memory_direct }}
+{% endif %}
+{% if dcache_poolinfo[pname].pool_memory_heap is defined %}
+dcache.java.memory.heap={{ dcache_poolinfo[pname].pool_memory_heap }}
+{% endif %}
+[{{ dcache_poolinfo[pname].domain }}/pool]
+pool.name={{ dcache_poolinfo[pname].poolname }}
+pool.path={{ dcache_poolinfo[pname].poolpath }}
+pool.size={{ dcache_poolinfo[pname].poolsize }}
+pool.plugins.meta=org.dcache.pool.repository.meta.db.BerkeleyDBMetaDataRepository
+pool.wait-for-files=${pool.path}/data:${pool.path}/meta
+{% endfor %}
