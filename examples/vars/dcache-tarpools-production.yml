@@ -1,0 +1,14 @@
+# Example group_vars file
+# A downloadable tar file of dcache
+dcache_tar_url:         "https://www.dcache.org/downloads/1.9/repo/3.0/dcache-3.0.30.tar.gz"
+
+# A downloadable tar file of java
+# Please use your own copy
+java_url:               "http://cvmfs-6.ndgf.org/~tigerste/jdk-8u151-linux-x64.tar.gz"
+
+# Zookeepers to use
+dcache_zookeeperkeeper:       "zookeeper1.example.org:2181,zookeeper2.example.org:2181,zookeeper3.example.org:2181"
+
+# Where to log
+dcache_log_host:        "dcache-log.example.org"
+dcache_log_remote:      true

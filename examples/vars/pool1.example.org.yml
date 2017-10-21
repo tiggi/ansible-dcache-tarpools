@@ -1,0 +1,38 @@
+# Host specific settings for host_vars/
+dcache_poolinfo:
+  pool1:
+    domain: "pool1_example_org_1_Domain"
+    poolname: "pool1_example_org_065"
+    poolsize: "74000G"
+    poolpath: "/pool/pool1/pool1"
+  pool2:
+    domain: "pool1_example_org_2_Domain"
+    poolname: "pool1_example_org_066"
+    poolsize: "74000G"
+    poolpath: "/pool/pool2/pool2"
+  pool3:
+    domain: "pool1_example_org_3_Domain"
+    poolname: "pool1_example_org_067"
+    poolsize: "67000G"
+    poolpath: "/pool/pool3/pool3"
+    # Memory settings for a Alice
+    pool_memory_heap: "8192m"
+    pool_memory_direct: "4096m"
+  pool4:
+    domain: "pool1_example_org_4_Domain"
+    poolname: "pool1_example_org_068"
+    poolsize: "74000G"
+    poolpath: "/pool/pool4/pool4"
+  pool5:
+    domain: "pool1_example_org_5_Domain"
+    poolname: "pool1_example_org_069"
+    poolsize: "74000G"
+    poolpath: "/pool/pool5/pool5"
+  pool6:
+    domain: "pool1_example_org_6_Domain"
+    poolname: "pool1_example_org_070"
+    poolsize: "67000G"
+    poolpath: "/pool/pool6/pool6"
+    # Memory settings for a Alice
+    pool_memory_heap: "8192m"
+    pool_memory_direct: "4096m"
