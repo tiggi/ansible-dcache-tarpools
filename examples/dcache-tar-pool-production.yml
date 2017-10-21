@@ -1,0 +1,10 @@
+# example playbook to manage a production system
+
+- hosts: dcache-tarpools-production
+  remote_user: "{{ pool_remote_user }}"
+  become: false
+  roles:
+    - { role: dcache-tar-pool-config, tags: ['config'] }
+    - { role: dcache-tar-pool-upgrade, tags: ['upgrade'] }
+    - { role: dcache-tar-pool-createpool, tags: ['createpool'] }
+
