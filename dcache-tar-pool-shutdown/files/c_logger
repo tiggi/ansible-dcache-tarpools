@@ -1,0 +1,5 @@
+#!/bin/bash
+if [ $# -eq 2 ]; then
+ echo New run of dcache-tar-pool-shutdown on `date`  >> $2
+ echo Run by $1 from $SSH_CONNECTION >> $2
+fi

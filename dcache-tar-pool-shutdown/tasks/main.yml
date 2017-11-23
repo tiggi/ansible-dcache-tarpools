@@ -1,0 +1,25 @@
+---
+- name: "Fetch local user name"
+  delegate_to: localhost
+  command: id -un
+  register: local_user
+  check_mode: no
+
+- name: Log the run of this role
+  script: files/c_logger {{ local_user.stdout }} {{ pool_home_dir }}/log/ansible
+  remote_user: "{{ pool_remote_user }}"
+
+- block:
+  - name: "Check if current dCache exists"
+    stat:
+      path: "{{ pool_home_dir }}/current"
+    register: dcache_current
+
+  - name:    "Stop dCache"
+    shell: "{{ pool_home_dir }}/current/bin/dcache stop"
+    args:
+      executable: "/bin/bash"
+    when:     dcache_current.stat.exists
+  remote_user: "{{ pool_remote_user }}"
+# dcache block end 
+
