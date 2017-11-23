@@ -1,4 +1,14 @@
 ---
+- name: 
+  delegate_to: localhost
+  command: id -un
+  register: local_user
+  check_mode: no
+
+- name: Log the run of this role
+  script: files/c_logger {{ local_user.stdout }} {{ pool_home_dir }}/log/ansible
+  remote_user: "{{ pool_remote_user }}"
+
 - name: "Clean up downloads directory"
   file:
     state: absent
@@ -6,16 +16,19 @@
   with_items:
      - "{{ pool_home_dir }}/downloads/newjava.tar.gz"
      - "{{ pool_home_dir }}/downloads/new.tar.gz"
+  remote_user: "{{ pool_remote_user }}"
 
 - name: "Check if private java has been installed" 
   stat:
      path: "{{ pool_home_dir }}/installed_java"
   register: java_installed
+  remote_user: "{{ pool_remote_user }}"
 
 - name: "Check installed java version"
   shell: cat {{ pool_home_dir }}/installed_java
   when: java_installed.stat.exists
   register: installed_java_url
+  check_mode: no
  
 - block:
   - name: "Create new java directory"
@@ -60,6 +73,7 @@
   stat: 
     path: "{{ pool_home_dir }}/installed_versions.log"
   register: dcache_installed
+  check_mode: no
 
 - name: "Fetch last installed dcache version"
   shell: tail -n 1 {{ pool_home_dir }}/installed_versions.log
@@ -104,7 +118,7 @@
       dest:   "{{ pool_home_dir }}/new/etc/dcache.conf"
       force: yes
 
-  - name:  "Symlink dcache.conf"
+  - name:  "Symlink log directory"
     file:
       state:  link
       src:    "{{ pool_home_dir }}/log"

@@ -1,4 +1,14 @@
+---
+- name: 
+  delegate_to: localhost
+  command: id -un
+  register: local_user
+  check_mode: no
+
 - block: 
+  - name: "Log the run of this role"
+    script: files/c_logger {{ local_user.stdout }} {{ pool_home_dir }}/log/ansible
+
   - name: "Create pool creation script"
     template:
          src: "create_pools.j2"

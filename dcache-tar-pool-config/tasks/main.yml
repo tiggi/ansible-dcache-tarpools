@@ -1,4 +1,14 @@
+- name: 
+  delegate_to: localhost
+  command: id -un
+  register: local_user
+  check_mode: no
+
 - block: 
+  - assert:
+      that: dcache_poolinfo is defined
+      msg: "Set dcache_poolinfo before running this role"
+
   - name: "Create dcache directory"
     file:
       state: directory
@@ -50,7 +60,11 @@
         src: "logrotate.conf.j2"
         dest: "{{ pool_home_dir }}/config/logrotate.conf"
 
+  - name: Log the run of this role
+    script: files/c_logger {{ local_user.stdout }} {{ pool_home_dir }}/log/ansible
+
   remote_user: "{{ pool_remote_user }}"
+  # block ends
 
 - block:
   - name: "Template dcache.conf"
@@ -73,6 +87,11 @@
        state: link
        src: "{{ pool_user_homedir }}/.bashrc"
        dest: "{{ pool_user_homedir }}/.bash_login"
+
+  - name: "Delete .bash_profile if it exists"
+    file: 
+       state: absent
+       path: "{{ pool_user_homedir }}/.bash_profile"
 
   - name: "Create ~/.ssh" 
     file:
